@@ -258,6 +258,8 @@ def load_value(v):
         return (v[1:-1], "str")
     elif v[0] == '[':
         return (load_array(v), "array")
+    elif v[0] == '(':
+        return (load_tuple(v), "tuple")
     elif len(v) == 20 and v[-1] == 'Z':
         if v[10] == 'T':
             return (datetime.datetime.strptime(v, "%Y-%m-%dT%H:%M:%SZ"), "date")
@@ -284,11 +286,14 @@ def load_value(v):
         return (v, itype)
 
 
-def load_array(a):
+def load_tuple(a):
+    return load_array(a, check_types=False, opening='(', ret_type=tuple)
+
+def load_array(a, check_types=True, opening='[', ret_type=list):
     atype = None
     retval = []
     a = a.strip()
-    if '[' not in a[1:-1]:
+    if opening not in a[1:-1]:
         strarray = False
         tmpa = a[1:-1].strip()
         if tmpa != '' and tmpa[0] == '"':
@@ -322,13 +327,13 @@ def load_array(a):
         a[i] = a[i].strip()
         if a[i] != '':
             nval, ntype = load_value(a[i])
-            if atype:
+            if check_types and atype:
                 if ntype != atype:
                     raise Exception("Not a homogeneous array")
             else:
                 atype = ntype
             retval.append(nval)
-    return retval
+    return ret_type(retval)
 
 def dump(o, f):
     """Writes out to f the toml corresponding to o. Returns said toml."""

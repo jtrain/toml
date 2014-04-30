@@ -33,6 +33,17 @@ def tag(value):
         except IndexError:
             pass
         return {'type': 'array', 'value': a}
+    elif isinstance(value, tuple):
+        a = []
+        for v in value:
+            a.append(tag(v))
+        try:
+            a[0]["value"]
+        except KeyError:
+            return tuple(a)
+        except IndexError:
+            pass
+        return {'type': 'tuple', 'value': tuple(a)}
     elif isinstance(value, basestring):
         return {'type': 'string', 'value': value}
     elif isinstance(value, bool):
