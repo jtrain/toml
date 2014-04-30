@@ -1,4 +1,5 @@
 import datetime, decimal
+import csv
 
 try:
     _range = xrange
@@ -294,22 +295,30 @@ def load_array(a, check_types=True, opening='[', ret_type=list):
     retval = []
     a = a.strip()
     if '[' not in a[1:-1] and '(' not in a[1:-1]:
-        # not nested.
-        strarray = False
-        tmpa = a[1:-1].strip()
-        if tmpa != '' and tmpa[0] == '"':
-            strarray = True
-        a = a[1:-1].split(',')
-        b = 0
-        if strarray:
-            while b < len(a) - 1:
-                while a[b].strip()[-1] != '"' and a[b+1].strip()[0] != '"':
-                    a[b] = a[b] + ',' + a[b+1]
-                    if b < len(a) - 2:
-                        a = a[:b+1] + a[b+2:]
-                    else:
-                        a = a[:b+1]
-                b += 1
+        # not nested. so just grab the contents.
+        contents = a[1:-1].strip()
+        a = []
+        in_str = False
+        in_escape = False
+        col = ''
+        for char in contents:
+
+            if in_escape:
+                in_escape = False
+            elif char == "\\" and in_str:
+                in_escape = True
+            elif char == '"' and not in_str:
+                in_str = True
+            elif char == '"':
+                in_str = False
+            elif char == ',' and not in_str:
+                a.append(col)
+                col = ''
+                continue
+            col += char
+        else:
+            a.append(col)
+
     else:
         al = list(a[1:-1])
         a = []
