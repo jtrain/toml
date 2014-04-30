@@ -161,7 +161,7 @@ def loads(s):
             i = 1
             pair = line.split('=', i)
             l = len(line)
-            while pair[-1][0] != ' ' and pair[-1][0] != '\t' and pair[-1][0] != '"' and pair[-1][0] != '[' and pair[-1] != 'true' and pair[-1] != 'false':
+            while pair[-1][0] != ' ' and pair[-1][0] != '\t' and pair[-1][0] != '"' and pair[-1][0] != '[' and pair[-1] != 'true' and pair[-1] != 'false' and pair[-1][0] != '(':
                 try:
                     float(pair[-1])
                     break
@@ -293,7 +293,8 @@ def load_array(a, check_types=True, opening='[', ret_type=list):
     atype = None
     retval = []
     a = a.strip()
-    if opening not in a[1:-1]:
+    if '[' not in a[1:-1] and '(' not in a[1:-1]:
+        # not nested.
         strarray = False
         tmpa = a[1:-1].strip()
         if tmpa != '' and tmpa[0] == '"':
@@ -315,9 +316,9 @@ def load_array(a, check_types=True, opening='[', ret_type=list):
         openarr = 0
         j = 0
         for i in range(len(al)):
-            if al[i] == '[':
+            if al[i] in ('[', '('):
                 openarr += 1
-            elif al[i] == ']':
+            elif al[i] in (']', ')'):
                 openarr -= 1
             elif al[i] == ',' and not openarr:
                 a.append(''.join(al[j:i]))
@@ -329,7 +330,7 @@ def load_array(a, check_types=True, opening='[', ret_type=list):
             nval, ntype = load_value(a[i])
             if check_types and atype:
                 if ntype != atype:
-                    raise Exception("Not a homogeneous array")
+                    raise Exception("Not a homogeneous array %s and %s" % (ntype, atype))
             else:
                 atype = ntype
             retval.append(nval)
