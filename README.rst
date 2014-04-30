@@ -2,6 +2,7 @@ TOML
 ====
 
 Original repository: https://github.com/uiri/toml
+Forked to add tuple support.  https://github.com/mojombo/toml/pull/154
 
 See also https://github.com/mojombo/toml
 
@@ -16,12 +17,16 @@ See http://j.xqz.ca/toml-status for up to date test results.
 Current Version of the Specification
 ------------------------------------
 
-https://github.com/mojombo/toml/blob/v0.2.0/README.md
+tuple branch readme here.
+https://github.com/mojombo/toml/blob/tuples/README.md
 
 QUICK GUIDE
 -----------
 
-``pip install toml``
+.. code:: text
+
+    # in your requirements.txt file
+    -e git+https://github.com/jtrain/toml.git#egg=toml
 
 toml.loads --- takes a string to be parsed as toml and returns the corresponding dictionary
 
